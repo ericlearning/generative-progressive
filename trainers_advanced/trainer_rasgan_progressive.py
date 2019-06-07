@@ -8,7 +8,7 @@ import torch.optim as optim
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 from torch.optim.lr_scheduler import CosineAnnealingLR, StepLR
-from utils import set_lr, get_lr, generate_noise, plot_multiple_images, save_fig, save, get_sample_images_list
+from utils import set_lr, get_lr, generate_noise, plot_multiple_images, save_fig, save, get_sample_images_list, get_display_samples
 
 class Trainer_RASGAN_Progressive():
 	def __init__(self, netD, netG, device, train_ds, lr_D = 0.0002, lr_G = 0.0002, drift = 0.001, loss_interval = 50, image_interval = 50, snapshot_interval = None, save_img_dir = 'saved_images/', save_snapshot_dir = 'saved_snapshots', resample = False):
