@@ -22,8 +22,8 @@ class Trainer_RASGAN_Progressive():
 		self.device = device
 		self.resample = resample
 
-		self.optimizerD = optim.RMSprop(self.netD.parameters(), lr = self.lr_D)
-		self.optimizerG = optim.RMSprop(self.netG.parameters(), lr = self.lr_G)
+		self.optimizerD = optim.Adam(self.netD.parameters(), lr = self.lr_D, betas = (0, 0.99))
+		self.optimizerG = optim.Adam(self.netG.parameters(), lr = self.lr_G, betas = (0, 0.99))
 
 		self.real_label = 1
 		self.fake_label = 0
@@ -50,14 +50,14 @@ class Trainer_RASGAN_Progressive():
 		criterion = nn.BCEWithLogitsLoss()
 		res_percentage = [None] + res_percentage
 		for i, (num_epoch, percentage, cur_bs) in enumerate(zip(res_num_epochs, res_percentage, bs)):
-			train_dl = self.train_ds.get_loader(self.sz, cur_bs)
+			train_dl = self.train_ds.get_loader(4 * (2**i), cur_bs)
 			train_dl_len = len(train_dl)
 			if(percentage is None):
 				num_epoch_transition = 0
 			else:
 				num_epoch_transition = int(num_epoch * percentage)
 
-			cnt = 0
+			cnt = 1
 			for epoch in range(num_epoch):
 				p = i
 				if(self.resample):

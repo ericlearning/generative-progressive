@@ -22,8 +22,8 @@ class Trainer_RASGAN_Progressive():
 		self.device = device
 		self.resample = resample
 
-		self.optimizerD = optim.RMSprop(self.netD.parameters(), lr = self.lr_D)
-		self.optimizerG = optim.RMSprop(self.netG.parameters(), lr = self.lr_G)
+		self.optimizerD = optim.Adam(self.netD.parameters(), lr = self.lr_D, betas = (0, 0.99))
+		self.optimizerG = optim.Adam(self.netG.parameters(), lr = self.lr_G, betas = (0, 0.99))
 
 		self.real_label = 1
 		self.fake_label = 0

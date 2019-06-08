@@ -49,14 +49,14 @@ class Trainer_RAHINGEGAN_Progressive():
 		p = 0
 		res_percentage = [None] + res_percentage
 		for i, (num_epoch, percentage, cur_bs) in enumerate(zip(res_num_epochs, res_percentage, bs)):
-			train_dl = self.train_ds.get_loader(self.sz, cur_bs)
+			train_dl = self.train_ds.get_loader(4 * (2**i), cur_bs)
 			train_dl_len = len(train_dl)
 			if(percentage is None):
 				num_epoch_transition = 0
 			else:
 				num_epoch_transition = int(num_epoch * percentage)
 
-			cnt = 0
+			cnt = 1
 			for epoch in range(num_epoch):
 				p = i
 				if(self.resample):
