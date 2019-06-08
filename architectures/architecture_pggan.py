@@ -235,6 +235,7 @@ class PGGAN_D(nn.Module):
 	def forward(self, x, stage):
 		stage_int = int(stage)
 		stage_type = (stage == stage_int)
+		out = x
 
 		# Stablization Steps
 		if(stage_type):
