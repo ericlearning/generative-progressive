@@ -1,4 +1,4 @@
-import os
+import os, cv2
 import copy
 import torch
 import torch.nn as nn
@@ -8,7 +8,7 @@ import torch.optim as optim
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 from torch.optim.lr_scheduler import CosineAnnealingLR, StepLR
-from utils import set_lr, get_lr, generate_noise, plot_multiple_images, save_fig, save, get_sample_images_list
+from utils import set_lr, get_lr, generate_noise, plot_multiple_images, save_fig, save, get_sample_images_list, get_display_samples
 
 class Trainer_RASGAN_Progressive():
 	def __init__(self, netD, netG, device, train_ds, lr_D = 0.0002, lr_G = 0.0002, drift = 0.001, loss_interval = 50, image_interval = 50, snapshot_interval = None, save_img_dir = 'saved_images/', save_snapshot_dir = 'saved_snapshots', resample = False):
@@ -29,7 +29,7 @@ class Trainer_RASGAN_Progressive():
 		self.fake_label = 0
 		self.nz = self.netG.nz
 
-		self.fixed_noise = generate_noise(16, self.nz, self.device)
+		self.fixed_noise = generate_noise(49, self.nz, self.device)
 		self.loss_interval = loss_interval
 		self.image_interval = image_interval
 		self.snapshot_interval = snapshot_interval
@@ -50,14 +50,14 @@ class Trainer_RASGAN_Progressive():
 		criterion = nn.BCEWithLogitsLoss()
 		res_percentage = [None] + res_percentage
 		for i, (num_epoch, percentage, cur_bs) in enumerate(zip(res_num_epochs, res_percentage, bs)):
-			train_dl = self.train_ds.get_loader(self.sz, cur_bs)
+			train_dl = self.train_ds.get_loader(4 * (2**i), cur_bs)
 			train_dl_len = len(train_dl)
 			if(percentage is None):
 				num_epoch_transition = 0
 			else:
 				num_epoch_transition = int(num_epoch * percentage)
 
-			cnt = 0
+			cnt = 1
 			for epoch in range(num_epoch):
 				p = i
 				if(self.resample):
@@ -114,12 +114,11 @@ class Trainer_RASGAN_Progressive():
 
 					if(j % self.image_interval == 0):
 						sample_images_list = get_sample_images_list('Progressive', (self.fixed_noise, self.netG, p))
-						plot_fig = plot_multiple_images(sample_images_list, 4, 4)
+						plot_img = get_display_samples(sample_images_list, 7, 7)
 						cur_file_name = os.path.join(self.save_img_dir, str(self.save_cnt)+' : '+str(epoch)+'-'+str(i)+'.jpg')
 						self.save_cnt += 1
-						save_fig(cur_file_name, plot_fig)
-						plot_fig.clf()
-
+						cv2.imwrite(cur_file_name, plot_img)
+						
 					if(self.snapshot_interval is not None):
 						if(j % self.snapshot_interval == 0):
 							stage_int = int(p)
