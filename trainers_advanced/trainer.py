@@ -51,7 +51,6 @@ class Trainer():
 		self.fixed_noise = generate_noise(49, self.nz, self.device)
 		self.loss_interval = loss_interval
 		self.image_interval = image_interval
-		self.snapshot_interval = snapshot_interval
 
 		self.errD_records = []
 		self.errG_records = []
@@ -129,7 +128,7 @@ class Trainer():
 					self.netG.zero_grad()
 					if(self.resample):
 						noise = generate_noise(bs, self.nz, self.device)
-						fake_images = self.netG(noise)
+						fake_images = self.netG(noise, p)
 
 					if(self.require_type == 0):
 						c_xf = self.netD(fake_images, p)

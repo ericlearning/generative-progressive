@@ -2,7 +2,7 @@ import os
 import torch
 import torch.nn as nn
 from dataset import Dataset
-from architectures.architectures_pggan import PGGAN_D, PGGAN_G
+from architectures.architecture_pggan import PGGAN_D, PGGAN_G
 from trainers_advanced.trainer import Trainer
 from utils import save, load
 

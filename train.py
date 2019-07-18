@@ -2,7 +2,7 @@ import os
 import torch
 import torch.nn as nn
 from dataset import Dataset
-from architectures.architectures_pggan import PGGAN_D, PGGAN_G
+from architectures.architecture_pggan import PGGAN_D, PGGAN_G
 from trainers.trainer_ralsgan_progressive import Trainer_RALSGAN_Progressive
 from trainers.trainer_rahingegan_progressive import Trainer_RAHINGEGAN_Progressive
 from trainers.trainer_wgan_gp_progressive import Trainer_WGAN_GP_Progressive
