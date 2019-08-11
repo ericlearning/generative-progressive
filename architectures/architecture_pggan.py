@@ -45,16 +45,7 @@ class ScaledConvBlock(nn.Module):
 
 		self.relu = nn.LeakyReLU(0.2, inplace = True)
 		if(self.use_equalized_lr):
-			'''
-			self.conv = nn.Conv2d(ni, no, ks, stride, pad, bias = False)
-			kaiming_normal_(self.conv.weight, a = calculate_gain('conv2d'))
-
-			self.bias = torch.nn.Parameter(torch.FloatTensor(no).fill_(0))
-			self.scale = (torch.mean(self.conv.weight.data ** 2)) ** 0.5
-			self.conv.weight.data.copy_(self.conv.weight.data / self.scale)
-			'''
 			self.conv = EqualizedConv(ni, no, ks, stride, pad, use_bias = use_bias)
-		
 		else:
 			self.conv = nn.Conv2d(ni, no, ks, stride, pad, bias = use_bias)
 
@@ -63,15 +54,7 @@ class ScaledConvBlock(nn.Module):
 
 
 	def forward(self, x):
-		'''
-		if(self.use_equalized_lr):
-			out = self.conv(x * self.scale)
-			out = out + self.bias.view(1, -1, 1, 1).expand_as(out)
-		else:
-			out = self.conv(x)
-		'''
 		out = self.conv(x)
-
 		if(self.only_conv == False):
 			if(self.act == 'relu'):
 				out = self.relu(out)
@@ -85,7 +68,7 @@ class UpSample(nn.Module):
 		super(UpSample, self).__init__()
 
 	def forward(self, x):
-		return F.interpolate(x, None, 2, 'bilinear', align_corners=True)
+		return F.interpolate(x, None, 2, 'nearest')
 
 class DownSample(nn.Module):
 	def __init__(self):
@@ -95,7 +78,6 @@ class DownSample(nn.Module):
 		return F.avg_pool2d(x, 2)
 
 # Progressive Architectures
-
 class Minibatch_Stddev(nn.Module):
 	def __init__(self):
 		super(Minibatch_Stddev, self).__init__()

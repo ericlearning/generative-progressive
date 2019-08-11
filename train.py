@@ -3,9 +3,7 @@ import torch
 import torch.nn as nn
 from dataset import Dataset
 from architectures.architecture_pggan import PGGAN_D, PGGAN_G
-from trainers.trainer_ralsgan_progressive import Trainer_RALSGAN_Progressive
-from trainers.trainer_rahingegan_progressive import Trainer_RAHINGEGAN_Progressive
-from trainers.trainer_wgan_gp_progressive import Trainer_WGAN_GP_Progressive
+from trainers.trainer import Trainer
 from utils import save, load
 
 dir_name = 'data/celeba'
@@ -20,7 +18,17 @@ device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 netD = PGGAN_D(sz, nc, use_sigmoid, False, True).to(device)
 netG = PGGAN_G(sz, nz, nc, True, True).to(device)
 
-trainer = Trainer_RAHINGEGAN_Progressive(netD, netG, device, data, lr_D = lr_D, lr_G = lr_G, loss_interval = 150, image_interval = 300)
+trainer = Trainer('SGAN', netD, netG, device, data, lr_D = lr_D, lr_G = lr_G, resample = True, weight_clip = None, use_gradient_penalty = False, drift = 0.001, loss_interval = 150, image_interval = 300, save_img_dir = 'saved_imges')
+trainer = Trainer('LSGAN', netD, netG, device, data, lr_D = lr_D, lr_G = lr_G, resample = True, weight_clip = None, use_gradient_penalty = False, drift = 0.001, loss_interval = 150, image_interval = 300, save_img_dir = 'saved_imges')
+trainer = Trainer('HINGEGAN', netD, netG, device, data, lr_D = lr_D, lr_G = lr_G, resample = True, weight_clip = None, use_gradient_penalty = False, drift = 0.001, loss_interval = 150, image_interval = 300, save_img_dir = 'saved_imges')
+trainer = Trainer('WGAN', netD, netG, device, data, lr_D = lr_D, lr_G = lr_G, resample = True, weight_clip = 0.01, use_gradient_penalty = False, drift = 0.001, loss_interval = 150, image_interval = 300, save_img_dir = 'saved_imges')
+trainer = Trainer('WGAN', netD, netG, device, data, lr_D = lr_D, lr_G = lr_G, resample = True, weight_clip = None, use_gradient_penalty = 10, drift = 0.001, loss_interval = 150, image_interval = 300, save_img_dir = 'saved_imges')
+
+trainer = Trainer('RASGAN', netD, netG, device, data, lr_D = lr_D, lr_G = lr_G, resample = True, weight_clip = None, use_gradient_penalty = False, drift = 0.001, loss_interval = 150, image_interval = 300, save_img_dir = 'saved_imges')
+trainer = Trainer('RALSGAN', netD, netG, device, data, lr_D = lr_D, lr_G = lr_G, resample = True, weight_clip = None, use_gradient_penalty = False, drift = 0.001, loss_interval = 150, image_interval = 300, save_img_dir = 'saved_imges')
+trainer = Trainer('RAHINGEGAN', netD, netG, device, data, lr_D = lr_D, lr_G = lr_G, resample = True, weight_clip = None, use_gradient_penalty = False, drift = 0.001, loss_interval = 150, image_interval = 300, save_img_dir = 'saved_imges')
+
+trainer = Trainer('QPGAN', netD, netG, device, data, lr_D = lr_D, lr_G = lr_G, resample = True, weight_clip = None, use_gradient_penalty = False, drift = 0.001, loss_interval = 150, image_interval = 300, save_img_dir = 'saved_imges')
 
 trainer.train([4, 8, 8, 8, 8, 8], [0.5, 0.5, 0.5, 0.5, 0.5], [16, 16, 16, 16, 16, 16])
 save('saved/cur_state.state', netD, netG, trainer.optimizerD, trainer.optimizerG)
